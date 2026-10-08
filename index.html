@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fiat Run: Ultimate Edition</title>
+    <style>
+        :root {
+            --bg-color: #020617;
+            --card-bg: #0f172a;
+            --accent: #f43f5e;
+            --accent-hover: #e11d48;
+            --gold: #f59e0b;
+            --cyan: #06b6d4;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a, #4c0519);
+            padding: 22px;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(244, 63, 94, 0.4);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 2.1rem;
+            margin-bottom: 6px;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
+        }
+
+        .dev-badge {
+            color: #fda4af;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
+        }
+
+        .page-pane {
+            display: none;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+
+        .page-pane.active {
+            display: block;
+        }
+
+        .page-pane h2 {
+            color: #fb7185;
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        .page-pane p, .page-pane li {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .game-box {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #020617;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--accent);
+        }
+
+        .start-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(2, 6, 23, 0.96);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            border-radius: 10px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .start-screen h3 {
+            color: #fef08a;
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 15px rgba(0,0,0,0.9);
+        }
+
+        .btn-start {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            font-size: 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.8);
+            transition: transform 0.2s;
+        }
+
+        .btn-start:hover {
+            transform: scale(1.05);
+            background: var(--accent-hover);
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 650px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        canvas {
+            background: #050b14;
+            border: 3px solid #334155;
+            border-radius: 8px;
+            max-width: 100%;
+            display: block;
+            touch-action: none;
+        }
+
+        .powerup-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            width: 100%;
+            max-width: 650px;
+        }
+
+        .power-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #334155;
+            background: #1e293b;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.88rem;
+            transition: all 0.2s;
+        }
+
+        .power-btn.active-shield {
+            border-color: var(--cyan);
+            background: #0891b2;
+            box-shadow: 0 0 12px var(--cyan);
+        }
+
+        .power-btn.active-fist {
+            border-color: var(--gold);
+            background: #d97706;
+            box-shadow: 0 0 12px var(--gold);
+        }
+
+        .mobile-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 650px;
+            margin-top: 10px;
+            gap: 10px;
+        }
+
+        .ctrl-btn {
+            flex: 1;
+            background: #1e293b;
+            color: white;
+            border: 2px solid #475569;
+            padding: 12px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .ctrl-btn:active, .ctrl-btn.pressed {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .action-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            max-width: 650px;
+            margin-top: 10px;
+        }
+
+        .btn-restart {
+            flex: 1;
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 11px;
+            font-size: 1.05rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .ranks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .rank-card {
+            background: #020617;
+            border: 1px solid var(--border);
+            padding: 18px;
+            border-radius: 12px;
+        }
+
+        .rank-card h3 {
+            color: var(--gold);
+            margin-bottom: 6px;
+            font-size: 1.15rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <header>
+        <h1>Fiat Run: Ultimate Edition</h1>
+        <div class="dev-badge">المطور الأسطوري: عبد الرحمن هادي 🇧🇭</div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" data-tab="gamePage">🎮 ساحة اللعبة</button>
+        <button class="nav-btn" data-tab="storyPage">📖 قصة المعركة</button>
+        <button class="nav-btn" data-tab="ranksPage">🏅 الأوسمة والمراكز</button>
+        <button class="nav-btn" data-tab="tipsPage">⚡ دليل القدرات</button>
+        <button class="nav-btn" data-tab="devPage">👨‍💻 عن المطور</button>
+    </div>
+
+    <!-- 1. صفحة اللعبة -->
+    <div id="gamePage" class="page-pane active">
+        <h2>معركة الموت ضد الدبابة السريعة 🔥</h2>
+        <div class="game-box">
+            <div class="start-screen" id="startOverlay">
+                <h3>⚠️ الوحش أسرع والفيات مجهزة بالقدرات الخارقة!</h3>
+                <p style="color: #cbd5e1; margin-bottom: 20px;">احصل على النقاط لتفعيل الدرع والقبضة الخارقة.</p>
+                <button class="btn-start" id="btnStartGame">🚀 ابدأ القتال الآن</button>
+            </div>
+            
+            <div class="stats-bar">
+                <span id="scoreTxt" style="color: #38bdf8;">النقاط: 0</span>
+                <span id="levelTxt" style="color: #f59e0b;">المستوى: 1</span>
+                <span id="healthTxt" style="color: #4ade80;">الصحة: 100</span>
+            </div>
+
+            <canvas id="gameCanvas" width="650" height="380"></canvas>
+
+            <div class="powerup-bar">
+                <button class="power-btn" id="btnShield">🛡️ تفعيل الدرع (50 نقطة)</button>
+                <button class="power-btn" id="btnFist">🥊 القبضة الخارقة (100 نقطة)</button>
+            </div>
+
+            <div class="mobile-controls">
+                <button class="ctrl-btn" id="leftBtn">⬅️ يسار</button>
+                <button class="ctrl-btn" id="rightBtn">يمين ➡️</button>
+            </div>
+
+            <div class="action-row">
+                <button class="btn-restart" id="btnRestart">🔄 إعادة تشغيل الجولة</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. صفحة القصة -->
+    <div id="storyPage" class="page-pane">
+        <h2>📖 قصة الصراع المحتدم</h2>
+        <p>في أزقة شوارع البحرين العريقة، زادت الدبابة العملاقة من سرعتها وشراستها. لم يعد التفادي المباشر كافياً، لذا طور المبرمج <strong>عبد الرحمن هادي</strong> تقنيات دفاعية وهجومية جديدة لسيارة فيات: نظام الدرع الكهرومغناطيسي والقبضة الصاروخية المدمرة!</p>
+    </div>
+
+    <!-- 3. صفحة الأوسمة والمراكز -->
+    <div id="ranksPage" class="page-pane">
+        <h2>🏅 الأوسمة والمراكز الأسطورية</h2>
+        <div class="ranks-grid">
+            <div class="rank-card">
+                <h3>🥉 وسام المبتدئ</h3>
+                <p>تخطى أول 10 قذائف في المستوى الأول.</p>
+            </div>
+            <div class="rank-card">
+                <h3>🥈 وسام المحترف</h3>
+                <p>تفعيل وضع الدرع وتجاوز 300 نقطة.</p>
+            </div>
+            <div class="rank-card">
+                <h3>🥇 وسام البطل الخارق</h3>
+                <p>إطلاق القبضة الخارقة وتجاوز 700 نقطة.</p>
+            </div>
+            <div class="rank-card" style="border-color: var(--accent);">
+                <h3>💎 وسام خاتم اللعبة</h3>
+                <p>تخطي 1500 نقطة وأنت بكامل صحتك لختم اللعبة والوصول للقمة!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. دليل القدرات -->
+    <div id="tipsPage" class="page-pane">
+        <h2>⚡ دليل القدرات الخاصة للسيارة</h2>
+        <p>1. 🛡️ <strong>وضع الدرع (50 نقطة):</strong> يحمي السيارة من قذائف الدبابة كلياً لمدة 5 ثوانٍ.<br>
+        2. 🥊 <strong>القبضة الخارقة (100 نقطة):</strong> تطلق صواريخ صاعدة تقوم بتدمير كافة القذائف المتجهة نحو السيارة فوراً.<br>
+        3. 🔄 <strong>إعادة التشغيل:</strong> يمكنك إعادة الجولة في أي وقت عبر الزر الأزرق بالأسفل.</p>
+    </div>
+
+    <!-- 5. عن المطور -->
+    <div id="devPage" class="page-pane">
+        <h2>👨‍💻 عن العبقري المطور</h2>
+        <p><strong>المبرمج:</strong> عبد الرحمن هادي</p>
+        <p><strong>الدولة:</strong> مملكة البحرين 🇧🇭</p>
+        <p>مطور الألعاب ومبرمج الويب المتألق.</p>
+    </div>
+
+    <footer>
+        جميع الحقوق محفوظة &copy; 2026 - Fiat Run Ultimate Edition | صُنع بفخر في البحرين 🇧🇭
+    </footer>
+</div>
+
+<script>
+window.onload = function() {
+    var buttons = document.querySelectorAll('.nav-btn');
+    var pages = document.querySelectorAll('.page-pane');
+
+    buttons.forEach(function(btn) {
+        btn.onclick = function() {
+            var tabId = this.getAttribute('data-tab');
+            buttons.forEach(function(b) { b.classList.remove('active'); });
+            pages.forEach(function(p) { p.classList.remove('active'); });
+            this.classList.add('active');
+            var target = document.getElementById(tabId);
+            if (target) target.classList.add('active');
+        };
+    });
+
+    var canvas = document.getElementById('gameCanvas');
+    var ctx = canvas.getContext('2d');
+
+    var gameStarted = false;
+    var isGameOver = false;
+    var animFrameId = null;
+    var spawnTimeoutId = null;
+
+    var score = 0;
+    var health = 100;
+    var level = 1;
+    var lastLevel = 1;
+
+    var car = { x: 300, y: 290, w: 45, h: 65, speed: 8 };
+    var monster = { x: 275, y: 20, w: 100, h: 50, dx: 5.5 };
+    var bombs = [];
+    var fists = [];
+
+    var shieldActive = false;
+    var shieldTimer = 0;
+
+    var tauntMessage = "";
+    var tauntTimer = 0;
+
+    var moveLeft = false;
+    var moveRight = false;
+
+    var audioCtx = null;
+
+    var tauntsHit = [
+        "ههههه! هذه مجرد البداية يا عبد الرحمن!",
+        "قذائفي لا ترحم! استسلم أفضل لك!",
+        "لن تنجو من دبابتي الشرسة!",
+        "أتحداك أن تصمد أكثر من ذلك!"
+    ];
+
+    var tauntsShield = ["درع؟ لن يحميك مني طويلاً!", "تظن هذا الساتر سينقذك؟"];
+    var tauntsFist = ["قبضة خارقة؟ سأدمر صواريخك!", "تحاول القتال؟ سأضاعف الهجمات!"];
+    var tauntsLevel = ["دخلت الجحيم الآن يا عبد الرحمن!", "ارتفعت الشراسة! حان وقت سحقك!"];
+
+    function triggerTaunt(arr) {
+        tauntMessage = arr[Math.floor(Math.random() * arr.length)];
+        tauntTimer = 180;
+    }
+
+    function spawnBomb() {
+        if (!gameStarted || isGameOver) return;
+
+        if (score >= 400) level = 3;
+        else if (score >= 150) level = 2;
+        else level = 1;
+
+        if (level !== lastLevel) {
+            lastLevel = level;
+            triggerTaunt(tauntsLevel);
+        }
+
+        var speedMul = 1 + (level - 1) * 0.45;
+        var bSpeed = 4.8 * speedMul;
+
+        bombs.push({
+            x: monster.x + monster.w / 2 - 10,
+            y: monster.y + monster.h,
+            w: 22, h: 22, speed: bSpeed
+        });
+
+        if (level >= 2) {
+            bombs.push({ x: monster.x + 8, y: monster.y + monster.h, w: 18, h: 18, speed: bSpeed * 1.15 });
+        }
+        if (level >= 3) {
+            bombs.push({ x: monster.x + monster.w - 26, y: monster.y + monster.h, w: 18, h: 18, speed: bSpeed * 1.3 });
+        }
+
+        var nextTime = Math.max(250, 700 - (level * 160));
+        spawnTimeoutId = setTimeout(spawnBomb, nextTime);
+    }
+
+    function loop() {
+        if (!gameStarted) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (!isGameOver) {
+            if (moveLeft) car.x -= car.speed;
+            if (moveRight) car.x += car.speed;
+
+            if (car.x < 15) car.x = 15;
+            if (car.x > canvas.width - car.w - 15) car.x = canvas.width - car.w - 15;
+
+            if (shieldActive) {
+                shieldTimer--;
+                if (shieldTimer <= 0) shieldActive = false;
+            }
+        }
+
+        // الشارع
+        ctx.fillStyle = "#0f172a";
+        ctx.fillRect(0, 0, 15, canvas.height);
+        ctx.fillRect(canvas.width - 15, 0, 15, canvas.height);
+
+        // الوحش
+        if (!isGameOver) {
+            var mSpeed = 5.5 + (level - 1) * 1.5;
+            monster.x += monster.dx > 0 ? mSpeed : -mSpeed;
+            if (monster.x <= 15 || monster.x >= canvas.width - monster.w - 15) monster.dx *= -1;
+        }
+
+        ctx.fillStyle = level === 3 ? "#991b1b" : (level === 2 ? "#7f1d1d" : "#581c87");
+        ctx.fillRect(monster.x, monster.y, monster.w, monster.h);
+        ctx.fillStyle = "#facc15";
+        ctx.fillRect(monster.x + 12, monster.y + 15, 12, 12);
+        ctx.fillRect(monster.x + monster.w - 24, monster.y + 15, 12, 12);
+
+        // كلام الوحش
+        if (tauntTimer > 0) {
+            ctx.font = "bold 15px 'Segoe UI'";
+            var textWidth = ctx.measureText(tauntMessage).width;
+            var boxX = monster.x + monster.w / 2 - textWidth / 2 - 10;
+            if (boxX < 10) boxX = 10;
+            if (boxX + textWidth + 20 > canvas.width - 10) boxX = canvas.width - textWidth - 30;
+
+            ctx.fillStyle = "rgba(2, 6, 23, 0.9)";
+            ctx.fillRect(boxX, monster.y - 32, textWidth + 20, 26);
+            ctx.strokeStyle = "#f43f5e";
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(boxX, monster.y - 32, textWidth + 20, 26);
+
+            ctx.fillStyle = "#fef08a";
+            ctx.textAlign = "center";
+            ctx.fillText(tauntMessage, boxX + (textWidth + 20) / 2, monster.y - 14);
+            tauntTimer--;
+        }
+
+        // القبضات
+        for (var f = fists.length - 1; f >= 0; f--) {
+            var fist = fists[f];
+            if (!isGameOver) fist.y -= fist.speed;
+
+            ctx.fillStyle = "#f59e0b";
+            ctx.fillRect(fist.x, fist.y, fist.w, fist.h);
+
+            for (var bIdx = bombs.length - 1; bIdx >= 0; bIdx--) {
+                var bombCheck = bombs[bIdx];
+                if (fist.x < bombCheck.x + bombCheck.w && fist.x + fist.w > bombCheck.x &&
+                    fist.y < bombCheck.y + bombCheck.h && fist.y + fist.h > bombCheck.y) {
+                    bombs.splice(bIdx, 1);
+                    score += 15;
+                }
+            }
+
+            if (fist.y < -30) fists.splice(f, 1);
+        }
+
+        // القذائف
+        for (var i = bombs.length - 1; i >= 0; i--) {
+            var b = bombs[i];
+            if (!isGameOver) b.y += b.speed;
+            
+            ctx.fillStyle = "#dc2626";
+            ctx.beginPath();
+            ctx.arc(b.x + 11, b.y + 11, b.w / 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (!isGameOver && b.x < car.x + car.w && b.x + b.w > car.x &&
+                b.y < car.y + car.h && b.y + b.h > car.y) {
+                
+                bombs.splice(i, 1);
+
+                if (!shieldActive) {
+                    health -= (20 + (level * 10));
+                    triggerTaunt(tauntsHit);
+
+                    if (health <= 0) {
+                        health = 0;
+                        isGameOver = true;
+                    }
+                }
+                continue;
+            }
+
+            if (b.y > canvas.height) {
+                bombs.splice(i, 1);
+                score += 10;
+            }
+        }
+
+        // السيارة
+        ctx.fillStyle = "#2563eb";
+        ctx.fillRect(car.x, car.y, car.w, car.h);
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(car.x + 6, car.y + 10, car.w - 12, 16);
+
+        if (shieldActive) {
+            ctx.strokeStyle = "#06b6d4";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(car.x + car.w / 2, car.y + car.h / 2, 42, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+
+        var lvNames = ["1 (هادئ)", "2 (مسعور)", "3 (الجحيم)"];
+        document.getElementById('scoreTxt').innerText = "النقاط: " + score;
+        document.getElementById('levelTxt').innerText = "المستوى: " + (lvNames[level - 1] || level);
+        document.getElementById('healthTxt').innerText = "صحة فيات: " + health;
+
+        if (isGameOver) {
+            ctx.fillStyle = "rgba(2, 6, 23, 0.96)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 24px 'Segoe UI'";
+            ctx.textAlign = "center";
+            ctx.fillText("💀 ههههه دمرتك قذائف الدبابة تماماً!", canvas.width / 2, canvas.height / 2 - 30);
+            ctx.font = "18px 'Segoe UI'";
+            ctx.fillStyle = "#fb7185";
+            ctx.fillText("مجموع نقاطك البطولية: " + score, canvas.width / 2, canvas.height / 2 + 10);
+            
+            ctx.fillStyle = "#3b82f6";
+            ctx.font = "bold 16px 'Segoe UI'";
+            ctx.fillText("اضغط على زر إعادة التشغيل بالأسفل لبدء جولة جديدة", canvas.width / 2, canvas.height / 2 + 50);
+        }
+
+        animFrameId = requestAnimationFrame(loop);
+    }
+
+    function launchGame() {
+        if (gameStarted) return;
+        gameStarted = true;
+        document.getElementById('startOverlay').style.display = 'none';
+
+        if (spawnTimeoutId) clearTimeout(spawnTimeoutId);
+        spawnBomb();
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        animFrameId = requestAnimationFrame(loop);
+    }
+
+    function restartGame() {
+        score = 0;
+        health = 100;
+        level = 1;
+        lastLevel = 1;
+        isGameOver = false;
+        bombs = [];
+        fists = [];
+        shieldActive = false;
+        shieldTimer = 0;
+        tauntMessage = "";
+        tauntTimer = 0;
+        car.x = (canvas.width - car.w) / 2;
+        monster.x = (canvas.width - monster.w) / 2;
+
+        document.getElementById('startOverlay').style.display = 'none';
+
+        if (!gameStarted) {
+            launchGame();
+        } else {
+            if (spawnTimeoutId) clearTimeout(spawnTimeoutId);
+            spawnBomb();
+        }
+    }
+
+    document.getElementById('btnStartGame').onclick = launchGame;
+    document.getElementById('btnRestart').onclick = restartGame;
+
+    document.getElementById('btnShield').onclick = function() {
+        if (score >= 50 && !shieldActive) {
+            score -= 50;
+            shieldActive = true;
+            shieldTimer = 300;
+            triggerTaunt(tauntsShield);
+        }
+    };
+
+    document.getElementById('btnFist').onclick = function() {
+        if (score >= 100) {
+            score -= 100;
+            fists.push({ x: car.x + car.w / 2 - 12, y: car.y, w: 24, h: 30, speed: 10 });
+            triggerTaunt(tauntsFist);
+        }
+    };
+
+    function setCarPos(clientX) {
+        if (!gameStarted || isGameOver) return;
+        var rect = canvas.getBoundingClientRect();
+        var scaleX = canvas.width / rect.width;
+        car.x = (clientX - rect.left) * scaleX - car.w / 2;
+    }
+
+    canvas.addEventListener('mousemove', function(e) { setCarPos(e.clientX); });
+    canvas.addEventListener('touchmove', function(e) {
+        if (e.touches.length > 0) setCarPos(e.touches[0].clientX);
+        e.preventDefault();
+    }, { passive: false });
+
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft' || e.key === 'a') moveLeft = true;
+        if (e.key === 'ArrowRight' || e.key === 'd') moveRight = true;
+    });
+
+    window.addEventListener('keyup', function(e) {
+        if (e.key === 'ArrowLeft' || e.key === 'a') moveLeft = false;
+        if (e.key === 'ArrowRight' || e.key === 'd') moveRight = false;
+    });
+
+    var lBtn = document.getElementById('leftBtn');
+    var rBtn = document.getElementById('rightBtn');
+
+    if (lBtn) {
+        lBtn.onmousedown = function() { moveLeft = true; };
+        lBtn.onmouseup = function() { moveLeft = false; };
+        lBtn.ontouchstart = function(e) { moveLeft = true; e.preventDefault(); };
+        lBtn.ontouchend = function() { moveLeft = false; };
+    }
+
+    if (rBtn) {
+        rBtn.onmousedown = function() { moveRight = true; };
+        rBtn.onmouseup = function() { moveRight = false; };
+        rBtn.ontouchstart = function(e) { moveRight = true; e.preventDefault(); };
+        rBtn.ontouchend = function() { moveRight = false; };
+    }
+};
+</script>
+</body>
+</html>
